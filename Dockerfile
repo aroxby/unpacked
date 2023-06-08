@@ -1,6 +1,6 @@
 FROM ubuntu:jammy
 
-RUN apt-get update && apt-get install -y ca-certificates jq skopeo
+RUN apt-get update && apt-get install -y ca-certificates fakechroot jq skopeo
 
 WORKDIR /root
 RUN mkdir ubuntu
@@ -10,7 +10,7 @@ WORKDIR ubuntu/chroot
 RUN tar xf ../$(jq .layers[].digest -r ../manifest.json | cut -d: -f2)
 
 RUN cp /etc/resolv.conf etc
-CMD chroot . \
+CMD fakechroot chroot . \
     apt-get --allow-unauthenticated --allow-insecure-repositories update && \
     apt-get -y install cowsay && \
     /usr/games/cowsay hello chroot
